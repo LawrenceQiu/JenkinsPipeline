@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        DIRECTORY_PATH = '/Users/lawrenceqiu/Documents/Code'
+        TESTING_ENVIRONMENT = 'test-environment'
+        PRODUCTION_ENVIRONMENT = 'LawrenceQiu'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Fetching the source code from the directory path specified by the environment variable"
+                echo "Compiling the code and generating any necessary artifacts"
+            }
+        }
+        stage('Test') {
+            steps {
+                echo "Running unit tests"
+                // run unit tests here
+                echo "Running integration tests"
+                // run integration tests here
+            }
+        }
+        stage('Code Quality Check') {
+            steps {
+                echo "Checking the quality of the code"
+                // run code quality check tools here
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo "Deploying the application to a testing environment specified by the environment variable"
+                // deploy to testing environment here
+            }
+        }
+        stage('Approval') {
+            steps {
+                echo "Waiting for manual approval"
+                sleep 10
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                echo "Deploying the code to the production environment '${env.PRODUCTION_ENVIRONMENT}'"
+                // deploy to production environment here
+            }
+        }
+    }
+}
