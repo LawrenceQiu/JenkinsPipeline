@@ -1,50 +1,81 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        DIRECTORY_PATH = '/Users/lawrenceqiu/Documents/Code'
-        TESTING_ENVIRONMENT = 'test-environment'
-        PRODUCTION_ENVIRONMENT = 'LawrenceQiu'
+  stages {
+    stage('Build') {
+      steps {
+        echo "Building the code using Maven"
+      }
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                echo "Fetching the source code from the directory path specified by the environment variable"
-                echo "Compiling the code and generating any necessary artifacts"
-            }
+    stage('Unit and Integration Tests') {
+      steps {
+        echo "Running unit and integration tests using JUnit and TestNG"
+      }
+      post {
+        success {
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Unit and Integration Tests Passed',
+            body: 'Unit and Integration Tests have passed successfully. Please see attached logs.',
+            attachmentsPattern: 'logs.txt',
+          )
         }
-        stage('Test') {
-            steps {
-                echo "Running unit tests"
-                // run unit tests here
-                echo "Running integration tests"
-                // run integration tests here
-            }
-        }
-        stage('Code Quality Check') {
-            steps {
-                echo "Checking the quality of the code"
-                // run code quality check tools here
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo "Deploying the application to a testing environment specified by the environment variable"
-                // deploy to testing environment here
-            }
-        }
-        stage('Approval') {
-            steps {
-                echo "Waiting for manual approval"
-                sleep 10
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                echo "Deploying the code to the production environment '${env.PRODUCTION_ENVIRONMENT}'"
-                // deploy to production environment here
-            }
+        failure {
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Unit and Integration Tests Failed',
+            body: 'Unit and Integration Tests have failed. Please see attached logs.',
+            attachmentsPattern: 'logs.txt',
+          )
         }
     }
+
+    stage('Code Analysis') {
+      steps {
+        echo "Integrating a code analysis tool - SonarQube"
+      }
+    }
+
+    stage('Security Scan') {
+      steps {
+        echo "Performing security scan using OWASP ZAP"
+      }
+      post {
+        success {
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Security Scan Passed',
+            body: 'Security Scan has passed successfully. Please see attached logs.',
+            attachmentsPattern: 'logs.xml',
+          )
+        }
+        failure {
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Security Scan Failed',
+            body: 'Security Scan has failed. Please see attached logs.',
+            attachmentsPattern: 'logs.xml',
+          )
+        }
+    }
+
+    stage('Deploy to Staging') {
+      steps {
+        echo "Deploying the application to a staging server"
+      }
+    }
+
+    stage('Integration Tests on Staging') {
+      steps {
+        echo "Running integration tests on the staging environment using Selenium and Cucumber"
+      }
+    }
+
+    stage('Deploy to Production') {
+      steps {
+        echo "Deploying the application to a production server"
+      }
+    }
+  }
 }
