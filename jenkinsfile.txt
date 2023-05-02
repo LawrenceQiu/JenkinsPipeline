@@ -14,13 +14,21 @@ pipeline {
       }
       post {
         success {
-            mail to: "lawrence.elque@gmail.com'",
-            subject: "Unit and Integration Tests Passed"
-            body: "Unit and Integration Tests have passed successfully. Please see attached logs."
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Unit and Integration Tests Passed',
+            body: 'Unit and Integration Tests have passed successfully. Please see attached logs.',
+          )
         }
-      }
+        failure {
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Unit and Integration Tests Failed',
+            body: 'Unit and Integration Tests have failed. Please see attached logs.',
+          )
+        }
     }
-    
+    }
 
     stage('Code Analysis') {
       steps {
@@ -34,11 +42,20 @@ pipeline {
       }
       post {
         success {
-            mail to: "lawrence.elque@gmail.com'",
+          emailext (
+            to: 'lawrence.elque@gmail.com',
             subject: 'Security Scan Passed',
             body: 'Security Scan has passed successfully. Please see attached logs.',
-            }
+          )
         }
+        failure {
+          emailext (
+            to: 'lawrence.elque@gmail.com',
+            subject: 'Security Scan Failed',
+            body: 'Security Scan has failed. Please see attached logs.',
+          )
+        }
+    }
     }
 
     stage('Deploy to Staging') {
